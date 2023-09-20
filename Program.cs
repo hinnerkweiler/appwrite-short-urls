@@ -79,6 +79,6 @@ public class Handler
             Context.Log(e.Message);
         }
 
-        return "https://trans-ocean.org";
+        return Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
     }
 }
