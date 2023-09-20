@@ -18,7 +18,6 @@ public class UrlDocument
         this.permissions = permissions;
         this.destination = destination;
         this.slug = slug;
-        this.url = url;
         this.created = DateTime.Parse(created);
         this.updated = DateTime.Parse(updated);
         this.userId = userId;
