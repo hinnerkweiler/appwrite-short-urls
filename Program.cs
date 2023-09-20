@@ -46,6 +46,9 @@ public class Handler
 
         // get the url from from url parameter "url"
         string slug = Context.Req.Query["slug"].ToString();
+        Context.Log("slug: " + slug);
+        Context.Log("projectId: " + projectId);
+        Context.Log("endpoint: " + Environment.GetEnvironmentVariable("APPWRITE_ENDPOINT"));
 
         // query the appwrite collection for the url and return the attribute "destination" if found
         // if not found return the default url
