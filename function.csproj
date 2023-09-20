@@ -9,4 +9,7 @@
 <ItemGroup>
     <PackageReference Include="Appwrite" Version="0.6.0" />
   </ItemGroup>
+<ItemGroup>
+    <Folder Include="Models/" />
+  </ItemGroup>
 </Project>

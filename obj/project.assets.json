@@ -2952,11 +2952,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/hinnerk/code/appwrite-function-template/function.csproj",
+      "projectUniqueName": "/Users/hinnerk/code/appwrite-short-urls/function.csproj",
       "projectName": "function",
-      "projectPath": "/Users/hinnerk/code/appwrite-function-template/function.csproj",
+      "projectPath": "/Users/hinnerk/code/appwrite-short-urls/function.csproj",
       "packagesPath": "/Users/hinnerk/.nuget/packages/",
-      "outputPath": "/Users/hinnerk/code/appwrite-function-template/obj/",
+      "outputPath": "/Users/hinnerk/code/appwrite-short-urls/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/hinnerk/.nuget/NuGet/NuGet.Config"

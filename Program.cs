@@ -1,4 +1,6 @@
-﻿namespace DotNetRuntime;
+﻿using System.Xml.XPath;
+
+namespace DotNetRuntime;
 
 using Appwrite;
 using Appwrite.Services;
@@ -8,32 +10,27 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Collections;
 
-public class Handler {
+public class Handler 
+{
+    private string projectId = Environment.GetEnvironmentVariable("APPWRITE_FUNCTION_PROJECT_ID");
+    private string apiKey = Environment.GetEnvironmentVariable("APPWRITE_API_KEY");
+    private string collectionId = Environment.GetEnvironmentVariable("APPWRITE_COLLECTION_ID");
+    private string databaseId = Environment.GetEnvironmentVariable("APPWRITE_DATABASE_ID");
 
     // This is your Appwrite function
     // It is executed each time we get a request
-    public async Task<RuntimeOutput> Main(RuntimeContext Context) 
+    public async Task<RuntimeOutput> Main(DotNetRuntime.RuntimeContext Context) 
     {
         // You can log messages to the console
         // if environment variable LOG_REQUESTS is set to true logs the request details
         if (Environment.GetEnvironmentVariable("LOG_REQUESTS") == "true") {
             Context.Log("---> at " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));  // Current time in UTC
             Context.Log(Context.Req.BodyRaw);                                                   // Raw request body, contains request data
-            Context.Log(JsonSerializer.Serialize<object>(Context.Req.Body));                    // Object from parsed JSON request body, otherwise string
-            Context.Log(JsonSerializer.Serialize<object>(Context.Req.Headers));                 // String key-value pairs of all request headers, keys are lowercase
-            Context.Log(Context.Req.Scheme);                                                    // Value of the x-forwarded-proto header, usually http or https
-            Context.Log(Context.Req.Method);                                                    // Request method, such as GET, POST, PUT, DELETE, PATCH, etc.
-            Context.Log(Context.Req.Url);                                                       // Full URL, for example: http://awesome.appwrite.io:8000/v1/hooks?limit=12&offset=50
-            Context.Log(Context.Req.Host);                                                      // Hostname from the host header, such as awesome.appwrite.io
-            Context.Log(Context.Req.Port);                                                      // Port from the host header, for example 8000
-            Context.Log(Context.Req.Path);                                                      // Path part of URL, for example /v1/hooks
-            Context.Log(Context.Req.QueryString);                                               // Raw query params string. For example "limit=12&offset=50"
-            Context.Log(JsonSerializer.Serialize<object>(Context.Req.Query));                   // Parsed query params. For example, req.query.limit
-        }
+          }
 
         switch (Context.Req.Method) {   
-            case "POST":
-                return Context.Res.Json(await Post(Context));
+            case "GET":
+                return Context.Res.Redirect(await Get(Context));
             default:
                 return Context.Res.Json(new Dictionary<string, object>()
                     {
@@ -42,12 +39,43 @@ public class Handler {
                     });
         }
     }
-    private async Task<Dictionary<string, object?>> Post(DotNetRuntime.RuntimeContext Context)
+    private async Task<Uri> Get(DotNetRuntime.RuntimeContext Context)
     {
-        return new Dictionary<string, object>()
-                    {
-                        { "message", "This is not the endpoint you were looking for!" },
-                        { "timestamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff zzz") }
-                    };
+        Uri result = new Uri(Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL"));
+
+        // get the url from from url parameter "url"
+        string slug = Context.Req.Query["slug"].ToString();
+
+        // query the appwrite collection for the url and return the attribute "destination" if found
+        // if not found return the default url
+        try
+        {
+            Client client = new Client();
+            client
+                .SetEndpoint(Environment.GetEnvironmentVariable("APPWRITE_ENDPOINT"))
+                .SetProject(projectId)
+                .SetKey(apiKey)
+            ;
+
+            var UrlList = new List<Models.UrlDocument>();
+
+            Databases databases = new Databases(client);
+            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<Models.UrlDocument> { $"slug={slug}"});
+            //get the first element from documentList and return it as string
+            if (documentList.Documents.Count > 0)
+            {
+                return new Uri(documentList[0].Destination);
+            }
+            else
+            {
+                return new Uri(Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL"));
+            }
+        }
+        catch (Exception e)
+        {
+            Context.Log(e.Message);
+        }
+
+        return null;
     }
 }
