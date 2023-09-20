@@ -31,7 +31,7 @@ public class Handler
 
         switch (Context.Req.Method) {   
             case "GET":
-                return Context.Res.Redirect(await Get(Context),HttpStatusCode.Found);
+                return Context.Res.Redirect(await Get(Context),302);
             default:
                 return Context.Res.Json(new Dictionary<string, object>()
                     {
