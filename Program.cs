@@ -61,11 +61,13 @@ public class Handler
             var UrlList = new List<Models.UrlDocument>();
 
             Databases databases = new Databases(client);
-            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<Models.UrlDocument> { $"slug={slug}"});
+            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> { $"slug={slug}"});
             //get the first element from documentList and return it as string
             if (documentList.Documents.Count > 0)
             {
-                return documentList[0].Destination;
+                var firstDocument = documentList.Documents.First();
+                return firstDocument.Data.GetValueOrDefault("destination").ToString();
+                
             }
             else
             {
