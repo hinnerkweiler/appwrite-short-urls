@@ -12,7 +12,7 @@ public class UrlDocument
     public DateTime updated { get; set; }
     public string userId { get; set; }
 
-    public UrlDocument(string id, string permissions, string destination, string comment, string slug, string url, string created, string updated, string expire, string userId)
+    public UrlDocument(string id= "", string permissions= "", string destination= "", string comment= "", string slug= "", string url= "", string created= "", string updated= "", string expire= "", string userId= "")
     {
         this.id = id;
         this.permissions = permissions;

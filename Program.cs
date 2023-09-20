@@ -9,6 +9,7 @@ using Appwrite.Extensions;
 using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.Collections;
+using System.Net;
 
 public class Handler 
 {
@@ -30,7 +31,7 @@ public class Handler
 
         switch (Context.Req.Method) {   
             case "GET":
-                return Context.Res.Redirect(await Get(Context));
+                return Context.Res.Redirect(await Get(Context),HttpStatusCode.Found);
             default:
                 return Context.Res.Json(new Dictionary<string, object>()
                     {
@@ -39,7 +40,7 @@ public class Handler
                     });
         }
     }
-    private async Task<Uri> Get(DotNetRuntime.RuntimeContext Context)
+    private async Task<string> Get(DotNetRuntime.RuntimeContext Context)
     {
         Uri result = new Uri(Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL"));
 
@@ -64,11 +65,11 @@ public class Handler
             //get the first element from documentList and return it as string
             if (documentList.Documents.Count > 0)
             {
-                return new Uri(documentList[0].Destination);
+                return documentList[0].Destination;
             }
             else
             {
-                return new Uri(Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL"));
+                return Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
             }
         }
         catch (Exception e)
@@ -76,6 +77,6 @@ public class Handler
             Context.Log(e.Message);
         }
 
-        return null;
+        return "https://trans-ocean.org";
     }
 }
