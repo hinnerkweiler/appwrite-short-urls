@@ -21,7 +21,6 @@ public class Handler
     private bool log = Environment.GetEnvironmentVariable("LOG_REQUESTS") == "true" ? true : false;
     private string defaultUrl = Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
 
-
     // This is your Appwrite function
     // It is executed each time we get a request
     public async Task<RuntimeOutput> Main(DotNetRuntime.RuntimeContext Context) 
@@ -63,14 +62,13 @@ public class Handler
                 .SetEndpoint(endpoint)
                 .SetProject(projectId)
                 .SetKey(apiKey)
+                .SetSelfSigned(true)
             ;
 
             var UrlList = new List<Models.UrlDocument>();
 
             Databases databases = new Databases(client);
             if (log) Context.Log("database connected");
-            var database = await databases.Get(databaseId: databaseId);
-            if (log) Context.Log("database: " + database.Name);
             var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId);
             if (log) Context.Log("documents: " + documentList.Documents.Count);
 
@@ -85,7 +83,7 @@ public class Handler
             }
             else
             {
-                return Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
+                return defaultUrl;
             }
         }
         catch (Exception e)
@@ -93,6 +91,6 @@ public class Handler
             Context.Log(e.Message);
         }
 
-        return Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
+        return defaultUrl;
     }
 }
