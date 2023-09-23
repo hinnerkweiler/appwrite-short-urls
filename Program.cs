@@ -69,7 +69,10 @@ public class Handler
 
             Databases databases = new Databases(client);
             if (log) Context.Log("database connected");
+            var database = await databases.Get(databaseId: databaseId);
+            if (log) Context.Log("database: " + database.Name);
             var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId);
+
             //get the first element from documentList and return it as string queries: new List<string> { $"slug={slug}"}
             if (documentList.Documents.Count > 0)
             {
