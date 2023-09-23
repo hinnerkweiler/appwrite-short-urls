@@ -14,9 +14,13 @@ using System.Net;
 public class Handler 
 {
     private string projectId = Environment.GetEnvironmentVariable("APPWRITE_FUNCTION_PROJECT_ID");
+    private string endpoint = Environment.GetEnvironmentVariable("APPWRITE_ENDPOINT");
     private string apiKey = Environment.GetEnvironmentVariable("APPWRITE_API_KEY");
     private string collectionId = Environment.GetEnvironmentVariable("APPWRITE_COLLECTION_ID");
     private string databaseId = Environment.GetEnvironmentVariable("APPWRITE_DATABASE_ID");
+    private bool log = Environment.GetEnvironmentVariable("LOG_REQUESTS") == "true" ? true : false;
+    private string defaultUrl = Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
+
 
     // This is your Appwrite function
     // It is executed each time we get a request
@@ -24,7 +28,7 @@ public class Handler
     {
         // You can log messages to the console
         // if environment variable LOG_REQUESTS is set to true logs the request details
-        if (Environment.GetEnvironmentVariable("LOG_REQUESTS") == "true") {
+        if (log) {
             Context.Log("---> at " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"));  // Current time in UTC
             Context.Log(Context.Req.BodyRaw);                                                   // Raw request body, contains request data
           }
@@ -42,13 +46,13 @@ public class Handler
     }
     private async Task<string> Get(DotNetRuntime.RuntimeContext Context)
     {
-        Uri result = new Uri(Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL"));
+        Uri result = new Uri(defaultUrl);
 
         // get the url from from url parameter "url"
         string slug = Context.Req.Query["slug"].ToString();
         Context.Log("slug: " + slug);
         Context.Log("projectId: " + projectId);
-        Context.Log("endpoint: " + Environment.GetEnvironmentVariable("APPWRITE_ENDPOINT"));
+        Context.Log("endpoint: " + endpoint);
 
         // query the appwrite collection for the url and return the attribute "destination" if found
         // if not found return the default url
@@ -56,7 +60,7 @@ public class Handler
         {
             Client client = new Client();
             client
-                .SetEndpoint(Environment.GetEnvironmentVariable("APPWRITE_ENDPOINT"))
+                .SetEndpoint(endpoint)
                 .SetProject(projectId)
                 .SetKey(apiKey)
             ;
@@ -64,9 +68,9 @@ public class Handler
             var UrlList = new List<Models.UrlDocument>();
 
             Databases databases = new Databases(client);
-            Context.Log("database connected");
-            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> { $"slug={slug}"});
-            //get the first element from documentList and return it as string
+            if (log) Context.Log("database connected");
+            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId);
+            //get the first element from documentList and return it as string queries: new List<string> { $"slug={slug}"}
             if (documentList.Documents.Count > 0)
             {
                  Context.Log("destination 1 of " + documentList.Documents.Count );
