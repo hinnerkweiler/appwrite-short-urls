@@ -141,9 +141,7 @@ public class Handler
             if (log) Context.Log("database connected");
             var documentList = await databases.ListDocuments(
                 collectionId: collectionId, 
-                databaseId: databaseId,
-                queries:
-                new List<string> { $"slug={slug}"}
+                databaseId: databaseId
             );
             if (log) Context.Log("documents: " + documentList.Documents.Count);
 
