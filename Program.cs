@@ -80,9 +80,10 @@ public class Handler
             
             Databases databases = new Databases(client);
             if (log) context.Log("database connected");
+            
 
             // check if the slug already exists
-            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> { $"slug={slug}"});
+            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> {Query.Equal("slug", slug)} );
             if (log) context.Log("documents: " + documentList.Documents.Count);
             if (documentList.Documents.Count > 0)
             {
@@ -141,7 +142,8 @@ public class Handler
             if (log) Context.Log("database connected");
             var documentList = await databases.ListDocuments(
                 collectionId: collectionId, 
-                databaseId: databaseId
+                databaseId: databaseId,
+                queries: new List<string> {Query.Equal("slug", slug)}
             );
             if (log) Context.Log("documents: " + documentList.Documents.Count);
 
