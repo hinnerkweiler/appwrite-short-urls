@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Collections;
 using System.Net;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 public class Handler 
 {
@@ -65,12 +66,18 @@ public class Handler
                 .SetSelfSigned(true)
             ;
 
-            // extract the slug and destination from the request body
-            var body = context.Req.BodyRaw;
-            JObject bodyjson = JObject.Parse(body);
-            if (log) context.Log("body: " + bodyjson.ToString());
+            JObject bodyjson = JObject.Parse(context.Req.BodyRaw);
+
             string slug = bodyjson["slug"].ToString();
+            slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
+
             string destination = bodyjson["destination"].ToString();
+            if (!destination.StartsWith("http://") && !destination.StartsWith("https://"))
+            {
+                destination = "https://" + destination;
+            }
+            //sanitize the destination: remove all characters that are not allowed
+            destination = Regex.Replace(destination, @"[^a-zA-Z0-9\.\-_\~\:\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%\/\s]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
 
             if (log) 
             {
@@ -80,7 +87,6 @@ public class Handler
             
             Databases databases = new Databases(client);
             if (log) context.Log("database connected");
-            
 
             // check if the slug already exists
             var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> {Query.Equal("slug", slug)} );
@@ -118,11 +124,8 @@ public class Handler
     {
         Uri result = new Uri(defaultUrl);
 
-        // get the url from from url parameter "url"
         string slug = Context.Req.Query["s"].ToString() ?? "hwde";
-        Context.Log("slug: " + slug);
-        Context.Log("projectId: " + projectId);
-        Context.Log("endpoint: " + endpoint);
+        slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
 
         // query the appwrite collection for the url and return the attribute "destination" if found
         // if not found return the default url
