@@ -70,7 +70,7 @@ public class Handler
             JObject bodyjson = JObject.Parse(context.Req.BodyRaw);
 
             //validate a api key is provided
-            if (bodyjson["key"] != clientApiKey)
+            if (string)bodyjson["key"] != clientApiKey)
             {
                 resultstatus = 401;
                 return "no api key provided";
