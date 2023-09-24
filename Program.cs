@@ -95,7 +95,7 @@ public class Handler
                 // if the slug does not exist create a new document with the slug and destination url
                 var document = await databases.CreateDocument(collectionId: collectionId, databaseId: databaseId, documentId: slug, data: new Dictionary<string, object> { { "slug", slug }, { "destination", destination } });
                 if (log) context.Log("document created");
-                if (log) context.Log("document id: " + );
+                if (log) context.Log("document id: " + document.Id);
                 if (log) context.Log("document data: " + document.Data);
                 if (document.Id == null)
                 {
@@ -138,7 +138,12 @@ public class Handler
 
             Databases databases = new Databases(client);
             if (log) Context.Log("database connected");
-            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId);
+            var documentList = await databases.ListDocuments(
+                collectionId: collectionId, 
+                databaseId: databaseId,
+                queries:
+                new List<string> { $"slug={slug}"}
+            );
             if (log) Context.Log("documents: " + documentList.Documents.Count);
 
 
