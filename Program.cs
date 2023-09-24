@@ -82,7 +82,7 @@ public class Handler
             if (log) context.Log("database connected");
 
             // check if the slug already exists
-            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, filters: new List<string> { $"slug={slug}"});
+            var documentList = await databases.ListDocuments(collectionId: collectionId, databaseId: databaseId, queries: new List<string> { $"slug={slug}"});
             if (log) context.Log("documents: " + documentList.Documents.Count);
             if (documentList.Documents.Count > 0)
             {
