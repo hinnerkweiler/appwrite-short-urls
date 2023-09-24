@@ -66,7 +66,8 @@ public class Handler
             ;
 
             // extract the slug and destination from the request body
-            var bodyjson = JsonSerializer.Serialize<object>(context.Req.Body);
+            var body = context.Req.BodyRaw;
+            var bodyjson = JObject.Parse(body);
             var slug = bodyjson["slug"].ToString();
             var destination = bodyjson["destination"].ToString();
 
