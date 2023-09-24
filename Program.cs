@@ -67,10 +67,10 @@ public class Handler
 
             // extract the slug and destination from the request body
             var body = context.Req.BodyRaw;
-            var bodyjson = JObject.Parse(body);
+            JObject bodyjson = JObject.Parse(body);
             if (log) context.Log("body: " + bodyjson.ToString());
-            string slug = bodyjson["slug"];
-            var destination = bodyjson["destination"];
+            string slug = bodyjson["slug"].ToString();
+            string destination = bodyjson["destination"].ToString();
 
             if (log) 
             {
