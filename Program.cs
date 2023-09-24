@@ -22,6 +22,7 @@ public class Handler
     private string databaseId = Environment.GetEnvironmentVariable("APPWRITE_DATABASE_ID");
     private bool log = Environment.GetEnvironmentVariable("LOG_REQUESTS") == "true" ? true : false;
     private string defaultUrl = Environment.GetEnvironmentVariable("APPWRITE_DEFAULTURL");
+    private string clientApiKey = Environment.GetEnvironmentVariable("APPWRITE_CLIENT_API_KEY");
 
     private int resultstatus = 200;
 
@@ -67,6 +68,13 @@ public class Handler
             ;
 
             JObject bodyjson = JObject.Parse(context.Req.BodyRaw);
+
+            //validate a api key is provided
+            if (bodyjson["key"] != clientApiKey)
+            {
+                resultstatus = 401;
+                return "no api key provided";
+            }
 
             string slug = bodyjson["slug"].ToString();
             slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
