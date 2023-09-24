@@ -48,7 +48,7 @@ public class Handler
         Uri result = new Uri(defaultUrl);
 
         // get the url from from url parameter "url"
-        string slug = Context.Req.Query["slug"].ToString() ?? "hwde";
+        string slug = Context.Req.Query["s"].ToString() ?? "hwde";
         Context.Log("slug: " + slug);
         Context.Log("projectId: " + projectId);
         Context.Log("endpoint: " + endpoint);
