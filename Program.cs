@@ -76,6 +76,8 @@ public class Handler
                 return "key invalid";
             }
 
+            
+
             string slug = bodyjson["slug"].ToString();
             slug = Regex.Replace(slug, @"[^a-zA-Z0-9]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
 
@@ -86,6 +88,12 @@ public class Handler
             }
             //sanitize the destination: remove all characters that are not allowed
             destination = Regex.Replace(destination, @"[^a-zA-Z0-9\.\-_\~\:\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%\/\s]", "", RegexOptions.None, TimeSpan.FromSeconds(1.5));
+
+            JObject data = new JObject(new Dictionary<string, JToken>()
+            {
+                { "slug", slug },
+                { "destination", destination }
+            });
 
             if (log) 
             {
@@ -108,7 +116,7 @@ public class Handler
             else
             {
                 // if the slug does not exist create a new document with the slug and destination url
-                var document = await databases.CreateDocument(collectionId: collectionId, databaseId: databaseId, documentId: slug, data: bodyjson);
+                var document = await databases.CreateDocument(collectionId: collectionId, databaseId: databaseId, documentId: slug, data: data);
                 if (log) context.Log("document created");
                 if (log) context.Log("document id: " + document.Id);
                 if (log) context.Log("document data: " + document.Data);
