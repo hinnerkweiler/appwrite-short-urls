@@ -69,7 +69,7 @@ public class Handler
             var body = context.Req.BodyRaw;
             var bodyjson = JObject.Parse(body);
             if (log) context.Log("body: " + bodyjson.ToString());
-            var slug = bodyjson["slug"];
+            string slug = bodyjson["slug"];
             var destination = bodyjson["destination"];
 
             if (log) 
@@ -111,6 +111,7 @@ public class Handler
             resultstatus = 500;
             context.Log(e.Message);
         }
+        return "error";
     }
     private async Task<string> Get(DotNetRuntime.RuntimeContext Context)
     {
